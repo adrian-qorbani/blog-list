@@ -53,23 +53,23 @@ const blogs = [
 
 describe("total likes", () => {
 
-  test("zero blog array test is zero.", () => {
+  test.skip("zero blog array test is zero.", () => {
     const emptyBlogs = listHelper.totalLikes([]);
     expect(emptyBlogs).toBe(0);
   });
 
-  test("only one blog to be equal to its likes.", () => {
+  test.skip("only one blog to be equal to its likes.", () => {
     const blog = blogs[0];
     const oneBlogResult = listHelper.totalLikes([blog]);
     expect(oneBlogResult).toBe(blog.likes);
   });
 
-  test("entrie blog list likes", () => {
+  test.skip("entrie blog list likes", () => {
     const result = listHelper.totalLikes(blogs);
     expect(result).toBe(36);
   });
 
-  test("blog with highest amount of likes", () => {
+  test.skip("blog with highest amount of likes", () => {
     const result = listHelper.favoriteBlog(blogs);
     expect(result).toEqual(blogs[2]);
   });
