@@ -88,6 +88,7 @@ test("a blog can be deleted", async () => {
   expect(titles).not.toContain(blogToDelete.content);
 });
 
+// TEST: id key is valid
 test("id unique identifier is actually called 'id'", async () => {
   const blogsAtStart = await helper.blogsInDb();
   // const blogToIdentify = blogsAtStart[0];
@@ -95,6 +96,29 @@ test("id unique identifier is actually called 'id'", async () => {
   blogsAtStart.map((blog) => {
     expect(blog.id).toBeDefined();
   });
+});
+
+// TEST: checking for blog's likes default value which is 0 if not given
+test("default likes is 0, if not given initial amount", async () => {
+  // const blogsAtStart = await helper.blogsInDb();
+  // blogsAtStart.map((blog) => {
+  //   expect(blog.likes).toBeDefined();
+  // });
+  const newBlog = {
+    title:"how to make friends and influence people?",
+    author:"Dr. Strange",
+    url:"http://some-cooler-website.com/friends-and-stuff",
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const blogsAtEnd = await helper.blogsInDb()
+  const addedBlog = await blogsAtEnd.find(blog => blog.title === "First class tests")
+  expect(addedBlog.likes).toBe(0)
 });
 
 afterAll(async () => {
