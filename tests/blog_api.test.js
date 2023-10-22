@@ -90,8 +90,11 @@ test("a blog can be deleted", async () => {
 
 test("id unique identifier is actually called 'id'", async () => {
   const blogsAtStart = await helper.blogsInDb();
-  const blogToIdentify = blogsAtStart[0];
-  expect(blogToIdentify.id).toBeDefined();
+  // const blogToIdentify = blogsAtStart[0];
+  // expect(blogToIdentify.id).toBeDefined();
+  blogsAtStart.map((blog) => {
+    expect(blog.id).toBeDefined();
+  });
 });
 
 afterAll(async () => {
