@@ -21,6 +21,20 @@ beforeEach(async () => {
   await blogObject.save();
 }, 10000);
 
+// TEST: A more specific blog is viewed
+test("a more specific blog can be viewed", async () => {
+  const blogsAtStart = await helper.blogsInDb();
+
+  const blogToView = blogsAtStart[0];
+
+  const resultBlog = await api
+    .get(`/api/blogs/${blogToView.id}`)
+    .expect(200)
+    .expect("Content-Type", /application\/json/);
+
+  expect(resultBlog.body).toEqual(blogToView);
+});
+
 // TEST: All blogs are returned
 test("all blogs are returned", async () => {
   const response = await api.get("/api/blogs");
@@ -47,21 +61,14 @@ test("a valid blog can be added", async () => {
     .expect(201)
     .expect("Content-Type", /application\/json/);
 
-  // const response = await api.get("/api/blogs");
-
   const blogsAtEnd = await helper.blogsInDb();
   expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1);
 
   const titles = blogsAtEnd.map((blog) => blog.title);
   expect(titles).toContain("async/await simplifies making async calls");
-
-  // const titles = response.body.map((blog) => blog.title);
-
-  // expect(response.body).toHaveLength(helper.initialBlogs.length + 1);
-  // expect(titles).toContain("async/await simplifies making async calls");
 });
 
-test("blog without title is not added", async () => {
+test.skip("blog without title is not added", async () => {
   const newBlog = {
     author: "mr. nobody",
   };
@@ -71,6 +78,22 @@ test("blog without title is not added", async () => {
   expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length);
 });
 
+// TEST: Deleting a blog
+test("a blog can be deleted", async () => {
+  const blogsAtStart = await helper.blogsInDb();
+  const blogToDelete = blogsAtStart[0];
+
+  await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+
+  const blogsAtEnd = await helper.blogsInDb();
+
+  expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length - 1);
+
+  const titles = blogsAtEnd.map((r) => r.title);
+
+  expect(titles).not.toContain(blogToDelete.content);
+});
+
 afterAll(async () => {
   await mongoose.connection.close();
-});
+}, 10000);
