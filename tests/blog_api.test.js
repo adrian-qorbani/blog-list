@@ -121,6 +121,20 @@ test("default likes is 0, if not given initial amount", async () => {
   expect(addedBlog.likes).toBe(0)
 });
 
+// TEST: if title or url is missing return 400 : Bad Request
+test("Blog posts' title and url aren't missing." , async () => {
+  const newBlog = {
+    // title:"how to make friends and influence people?",
+    author:"Dr. Strange",
+    url:"http://some-cooler-website.com/friends-and-stuff",
+  }
+
+  await api
+  .post('/api/blogs')
+  .send(newBlog)
+  .expect(400)
+})
+
 afterAll(async () => {
   await mongoose.connection.close();
 }, 10000);
