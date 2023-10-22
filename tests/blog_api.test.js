@@ -8,17 +8,16 @@ const api = supertest(app);
 const Blog = require("../models/blog");
 
 beforeEach(async () => {
+  // helper.initialBlogs.forEach(async (blog) => {
+  //   let blogObject = new Blog(blog);
+  //   await blogObject.save();
+  //   console.log("saved.");
+  // });
+  // console.log("done.");
   await Blog.deleteMany({});
-  // logger.info(helper.initialBlogs)
-
-  let blogObject = new Blog(helper.initialBlogs[0]);
-  await blogObject.save();
-
-  blogObject = new Blog(helper.initialBlogs[1]);
-  await blogObject.save();
-
-  blogObject = new Blog(helper.initialBlogs[2]);
-  await blogObject.save();
+  const blogObject = helper.initialBlogs.map((blog) => new Blog(blog));
+  const promiseArray = blogObject.map((blog) => blog.save());
+  await Promise.all(promiseArray);
 }, 10000);
 
 // TEST: A more specific blog is viewed

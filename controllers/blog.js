@@ -28,7 +28,6 @@ blogRouters.post("/", async (request, response, next) => {
   // NOTE: express-async-error package is used for try/catch removal/simplification
   const savedBlog = await blog.save();
   response.status(201).json(savedBlog);
-
 });
 
 blogRouters.delete("/:id", async (request, response, next) => {
@@ -44,7 +43,7 @@ blogRouters.delete("/:id", async (request, response, next) => {
   response.status(204).end();
 });
 
-blogRouters.put("/:id", (request, response, next) => {
+blogRouters.put("/:id", async (request, response, next) => {
   const body = request.body;
 
   const blog = {
@@ -54,11 +53,13 @@ blogRouters.put("/:id", (request, response, next) => {
     likes: body.likes,
   };
 
-  Blog.findByIdAndUpdate(request.params.id, blog, { new: true })
-    .then((updatedBlog) => {
-      response.json(updatedBlog);
-    })
-    .catch((error) => next(error));
+  // Blog.findByIdAndUpdate(request.params.id, blog, { new: true })
+  //   .then((updatedBlog) => {
+  //     response.json(updatedBlog);
+  //   })
+  //   .catch((error) => next(error));
+  const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, { new: true });
+  response.json(updatedBlog)
 });
 
 module.exports = blogRouters;
