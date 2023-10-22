@@ -7,15 +7,12 @@ blogRouters.get("/", async (request, response) => {
 });
 
 blogRouters.get("/:id", async (request, response, next) => {
-  try {
-    const blog = await Blog.findById(request.params.id);
-    if (blog) {
-      response.json(blog);
-    } else {
-      response.status(404).end();
-    }
-  } catch (exception) {
-    next(exception);
+  // NOTE: express-async-error package is used for try/catch removal/simplification
+  const blog = await Blog.findById(request.params.id);
+  if (blog) {
+    response.json(blog);
+  } else {
+    response.status(404).end();
   }
 });
 
@@ -28,21 +25,23 @@ blogRouters.post("/", async (request, response, next) => {
     url: body.url,
     likes: body.likes,
   });
-  try {
-    const savedBlog = await blog.save();
-    response.status(201).json(savedBlog);
-  } catch (exception) {
-    next(exception);
-  }
+  // NOTE: express-async-error package is used for try/catch removal/simplification
+  const savedBlog = await blog.save();
+  response.status(201).json(savedBlog);
+
 });
 
 blogRouters.delete("/:id", async (request, response, next) => {
-  try {
-    await Blog.findByIdAndRemove(request.params.id);
-    response.status(204).end();
-  } catch (exception) {
-    next(exception);
-  }
+  // try {
+  //   await Blog.findByIdAndRemove(request.params.id);
+  //   response.status(204).end();
+  // } catch (exception) {
+  //   next(exception);
+  // }
+  //
+  // NOTE: express-async-error package is used for try/catch removal/simplification
+  await Blog.findByIdAndRemove(request.params.id);
+  response.status(204).end();
 });
 
 blogRouters.put("/:id", (request, response, next) => {
