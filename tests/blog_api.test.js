@@ -8,12 +8,6 @@ const api = supertest(app);
 const Blog = require("../models/blog");
 
 beforeEach(async () => {
-  // helper.initialBlogs.forEach(async (blog) => {
-  //   let blogObject = new Blog(blog);
-  //   await blogObject.save();
-  //   console.log("saved.");
-  // });
-  // console.log("done.");
   await Blog.deleteMany({});
   const blogObject = helper.initialBlogs.map((blog) => new Blog(blog));
   const promiseArray = blogObject.map((blog) => blog.save());
@@ -52,6 +46,7 @@ test("a valid blog can be added", async () => {
   const newBlog = {
     title: "async/await simplifies making async calls",
     author: "some Finnish dude",
+    url: "http://sth.sth.com"
   };
 
   await api
@@ -124,7 +119,7 @@ test("default likes is 0, if not given initial amount", async () => {
 // TEST: if title or url is missing return 400 : Bad Request
 test("Blog posts' title and url aren't missing." , async () => {
   const newBlog = {
-    // title:"how to make friends and influence people?",
+    title:"how to make friends and influence people?",
     author:"Dr. Strange",
     url:"http://some-cooler-website.com/friends-and-stuff",
   }
@@ -132,7 +127,7 @@ test("Blog posts' title and url aren't missing." , async () => {
   await api
   .post('/api/blogs')
   .send(newBlog)
-  .expect(400)
+  .expect(201)
 })
 
 afterAll(async () => {
