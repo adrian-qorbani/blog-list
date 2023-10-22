@@ -1,46 +1,30 @@
 // 1st test
 const mongoose = require("mongoose");
 const supertest = require("supertest");
+const helper = require("./test_helper");
 const app = require("../app");
 const logger = require("../utils/logger");
 const api = supertest(app);
 const Blog = require("../models/blog");
 
-const initialBlogs = [
-  {
-    title: "How to do cardio properly?",
-    author: "Bruce Lee",
-    url: "www.sth.com/cardio",
-    likes: 12,
-  },
-  {
-    title: "Why everything is your fault and why is that okay.",
-    author: "Me, probably",
-    url: "goodsite.com/fault",
-    likes: 41,
-  },
-  {
-    title: "We become what we think about.",
-    author: "Lana Ray",
-    url: "www.cooler-website.com/somesite",
-    likes: 33,
-  },
-];
-
 beforeEach(async () => {
   await Blog.deleteMany({});
-  let blogObject = new Blog(initialBlogs[0]);
+  // logger.info(helper.initialBlogs)
+
+  let blogObject = new Blog(helper.initialBlogs[0]);
   await blogObject.save();
-  blogObject = new Blog(initialBlogs[1]);
+
+  blogObject = new Blog(helper.initialBlogs[1]);
   await blogObject.save();
-  blogObject = new Blog(initialBlogs[2]);
+
+  blogObject = new Blog(helper.initialBlogs[2]);
   await blogObject.save();
 }, 10000);
 
-// TEST: All blogs are returned 
+// TEST: All blogs are returned
 test("all blogs are returned", async () => {
   const response = await api.get("/api/blogs");
-  expect(response.body).toHaveLength(initialBlogs.length);
+  expect(response.body).toHaveLength(helper.initialBlogs.length);
 });
 
 // TEST: Specific Blog is returned
@@ -63,12 +47,28 @@ test("a valid blog can be added", async () => {
     .expect(201)
     .expect("Content-Type", /application\/json/);
 
-  const response = await api.get("/api/blogs");
+  // const response = await api.get("/api/blogs");
 
-  const titles = response.body.map((blog) => blog.title);
+  const blogsAtEnd = await helper.blogsInDb();
+  expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1);
 
-  expect(response.body).toHaveLength(initialBlogs.length + 1);
+  const titles = blogsAtEnd.map((blog) => blog.title);
   expect(titles).toContain("async/await simplifies making async calls");
+
+  // const titles = response.body.map((blog) => blog.title);
+
+  // expect(response.body).toHaveLength(helper.initialBlogs.length + 1);
+  // expect(titles).toContain("async/await simplifies making async calls");
+});
+
+test("blog without title is not added", async () => {
+  const newBlog = {
+    author: "mr. nobody",
+  };
+
+  await api.post("/api/blogs").send(newBlog).expect(400);
+  const blogsAtEnd = await helper.blogsInDb();
+  expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length);
 });
 
 afterAll(async () => {
