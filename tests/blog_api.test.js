@@ -117,7 +117,7 @@ test("default likes is 0, if not given initial amount", async () => {
     .expect('Content-Type', /application\/json/)
 
   const blogsAtEnd = await helper.blogsInDb()
-  const addedBlog = await blogsAtEnd.find(blog => blog.title === "First class tests")
+  const addedBlog = await blogsAtEnd.find(blog => blog.title === "how to make friends and influence people?")
   expect(addedBlog.likes).toBe(0)
 });
 
