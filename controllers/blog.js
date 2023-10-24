@@ -1,5 +1,6 @@
 const blogRouters = require("express").Router();
 const Blog = require("../models/blog");
+const User = require("../models/user");
 
 blogRouters.get("/", async (request, response) => {
   const blogs = await Blog.find({});
@@ -19,15 +20,23 @@ blogRouters.get("/:id", async (request, response, next) => {
 blogRouters.post("/", async (request, response, next) => {
   const body = request.body;
 
+  const user = await User.findById(body.userId);
+
   const blog = new Blog({
     title: body.title,
     author: body.author,
     url: body.url,
     likes: body.likes,
+    user: user.id,
   });
   // NOTE: express-async-error package is used for try/catch removal/simplification
   const savedBlog = await blog.save();
-  response.status(201).json(savedBlog);
+
+  user.blogs = user.blogs.concat(savedBlog._id);
+  await user.save();
+
+  // response.status(201).json(savedBlog);
+  response.json(savedBlog);
 });
 
 blogRouters.delete("/:id", async (request, response, next) => {
@@ -52,9 +61,11 @@ blogRouters.put("/:id", async (request, response, next) => {
     url: body.url,
     likes: body.likes,
   };
-  
-  const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, { new: true });
-  response.json(updatedBlog)
+
+  const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, {
+    new: true,
+  });
+  response.json(updatedBlog);
 });
 
 module.exports = blogRouters;
