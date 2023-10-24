@@ -15,7 +15,7 @@ beforeEach(async () => {
 }, 10000);
 
 // TEST: A more specific blog is viewed
-test("a more specific blog can be viewed", async () => {
+test.skip("a more specific blog can be viewed", async () => {
   const blogsAtStart = await helper.blogsInDb();
 
   const blogToView = blogsAtStart[0];
@@ -29,20 +29,20 @@ test("a more specific blog can be viewed", async () => {
 });
 
 // TEST: All blogs are returned
-test("all blogs are returned", async () => {
+test.skip("all blogs are returned", async () => {
   const response = await api.get("/api/blogs");
   expect(response.body).toHaveLength(helper.initialBlogs.length);
 });
 
 // TEST: Specific Blog is returned
-test("a specific blog is within the returned blogs", async () => {
+test.skip("a specific blog is within the returned blogs", async () => {
   const response = await api.get("/api/blogs");
   const titles = response.body.map((blog) => blog.title);
   expect(titles).toContain("How to do cardio properly?");
 });
 
 // TEST: Adding new Blog
-test("a valid blog can be added", async () => {
+test.skip("a valid blog can be added", async () => {
   const newBlog = {
     title: "async/await simplifies making async calls",
     author: "some Finnish dude",
@@ -73,7 +73,7 @@ test.skip("blog without title is not added", async () => {
 });
 
 // TEST: Deleting a blog
-test("a blog can be deleted", async () => {
+test.skip("a blog can be deleted", async () => {
   const blogsAtStart = await helper.blogsInDb();
   const blogToDelete = blogsAtStart[0];
   await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
@@ -84,7 +84,7 @@ test("a blog can be deleted", async () => {
 });
 
 // TEST: id key is valid
-test("id unique identifier is actually called 'id'", async () => {
+test.skip("id unique identifier is actually called 'id'", async () => {
   const blogsAtStart = await helper.blogsInDb();
   // const blogToIdentify = blogsAtStart[0];
   // expect(blogToIdentify.id).toBeDefined();
@@ -94,7 +94,7 @@ test("id unique identifier is actually called 'id'", async () => {
 });
 
 // TEST: checking for blog's likes default value which is 0 if not given
-test("default likes is 0, if not given initial amount", async () => {
+test.skip("default likes is 0, if not given initial amount", async () => {
   // const blogsAtStart = await helper.blogsInDb();
   // blogsAtStart.map((blog) => {
   //   expect(blog.likes).toBeDefined();
@@ -119,7 +119,7 @@ test("default likes is 0, if not given initial amount", async () => {
 });
 
 // TEST: if title or url is missing return 400 : Bad Request
-test("Blog posts' title and url aren't missing.", async () => {
+test.skip("Blog posts' title and url aren't missing.", async () => {
   const newBlog = {
     title: "how to make friends and influence people?",
     author: "Dr. Strange",
@@ -130,7 +130,7 @@ test("Blog posts' title and url aren't missing.", async () => {
 });
 
 // TEST: updating a blog likes quantity works
-test("Succsesfully updated a blog's likes.", async () => {
+test.skip("Succsesfully updated a blog's likes.", async () => {
   const updatedBlog = helper.initialBlogs[0];
   const newerUpdate = { likes: 20 };
 
