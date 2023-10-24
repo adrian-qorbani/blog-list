@@ -46,7 +46,7 @@ test("a valid blog can be added", async () => {
   const newBlog = {
     title: "async/await simplifies making async calls",
     author: "some Finnish dude",
-    url: "http://sth.sth.com"
+    url: "http://sth.sth.com",
   };
 
   await api
@@ -100,35 +100,48 @@ test("default likes is 0, if not given initial amount", async () => {
   //   expect(blog.likes).toBeDefined();
   // });
   const newBlog = {
-    title:"how to make friends and influence people?",
-    author:"Dr. Strange",
-    url:"http://some-cooler-website.com/friends-and-stuff",
-  }
+    title: "how to make friends and influence people?",
+    author: "Dr. Strange",
+    url: "http://some-cooler-website.com/friends-and-stuff",
+  };
 
   await api
-    .post('/api/blogs')
+    .post("/api/blogs")
     .send(newBlog)
     .expect(201)
-    .expect('Content-Type', /application\/json/)
+    .expect("Content-Type", /application\/json/);
 
-  const blogsAtEnd = await helper.blogsInDb()
-  const addedBlog = await blogsAtEnd.find(blog => blog.title === "how to make friends and influence people?")
-  expect(addedBlog.likes).toBe(0)
+  const blogsAtEnd = await helper.blogsInDb();
+  const addedBlog = await blogsAtEnd.find(
+    (blog) => blog.title === "how to make friends and influence people?"
+  );
+  expect(addedBlog.likes).toBe(0);
 });
 
 // TEST: if title or url is missing return 400 : Bad Request
-test("Blog posts' title and url aren't missing." , async () => {
+test("Blog posts' title and url aren't missing.", async () => {
   const newBlog = {
-    title:"how to make friends and influence people?",
-    author:"Dr. Strange",
-    url:"http://some-cooler-website.com/friends-and-stuff",
-  }
+    title: "how to make friends and influence people?",
+    author: "Dr. Strange",
+    url: "http://some-cooler-website.com/friends-and-stuff",
+  };
 
-  await api
-  .post('/api/blogs')
-  .send(newBlog)
-  .expect(201)
-})
+  await api.post("/api/blogs").send(newBlog).expect(201);
+});
+
+// TEST: updating a blog likes quantity works
+test("Succsesfully updated a blog's likes.", async () => {
+  const updatedBlog = helper.initialBlogs[0];
+  const newerUpdate = { likes: 20 };
+
+  await api.put(`/api/${updatedBlog.id}`).send(newerUpdate);
+
+  const blogsAtEnd = await helper.blogsInDb();
+  const addedBlog = await blogsAtEnd.find(
+    (blog) => blog.title === helper.initialBlogs[0].title
+  );
+  expect(addedBlog.likes).toBe(20);
+});
 
 afterAll(async () => {
   await mongoose.connection.close();
