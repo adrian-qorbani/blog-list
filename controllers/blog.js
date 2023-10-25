@@ -63,8 +63,16 @@ blogRouters.delete("/:id", async (request, response, next) => {
   // }
   //
   // NOTE: express-async-error package is used for try/catch removal/simplification
-  await Blog.findByIdAndRemove(request.params.id);
-  response.status(204).end();
+  const decodedToken = jwt.verify(request.token, process.env.SECRET);
+  const user = await User.findById(decodedToken.id);
+  const targetedBlog = await Blog.findById(request.params.id);
+
+  if (targetedBlog.user._id.toString() === user._id.toString()) {
+    await Blog.findByIdAndRemove(request.params.id);
+    response.status(204).end();
+  } else {
+    return response.status(401).json({ error: `Unauthorized` });
+  }
 });
 
 blogRouters.put("/:id", async (request, response, next) => {
