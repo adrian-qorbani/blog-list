@@ -34,7 +34,7 @@ blogRouters.post("/", async (request, response, next) => {
     return response.status(401).json({ error: "token invalid." });
   }
   const user = await User.findById(decodedToken.id);
-  logger.info(`Post added by ${user.name}`)
+  console.log(`Post added by ${user.name}`)
   
   const blog = new Blog({
     title: body.title,

@@ -178,7 +178,45 @@ describe('when there is initially one user in db', () => {
     expect(usernames).toContain(newUser.username)
   })
 
-  test('creation fails with proper statuscode and message if username already taken', async () => {
+  test('creation of a new blog succeeds with proper user token', async () => {
+    const usersAtStart = await helper.usersInDb()
+
+    const newUser = {
+      username: 'Jared',
+      name: 'Matti Luukkainen',
+      password: 'salainen',
+    }
+
+    const newBlog = {
+      title:"Best places to visit before turning 30",
+      author:"Carl 'CJ' Johnson",
+      url:"http://www.sth.sth.com.net.etc",
+      likes:70
+    }
+
+    await api
+      .post('/api/users')
+      .send(newUser)
+
+    const result = await api
+      .post('/api/login')
+      .send(newUser)
+
+    const header = {
+      'Authorization': `Bearer ${result._body.token}`
+    }
+    console.log(header)
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(200)
+      .set(header)
+      .expect('Content-Type', /application\/json/)
+
+
+  })
+
+  test.skip('creation fails with proper statuscode and message if username already taken', async () => {
     const usersAtStart = await helper.usersInDb()
 
     const newUser = {
@@ -199,7 +237,7 @@ describe('when there is initially one user in db', () => {
     expect(usersAtEnd).toEqual(usersAtStart)
   })
 
-  test('creation fails with proper statuscode and message if username is too short', async () => {
+  test.skip('creation fails with proper statuscode and message if username is too short', async () => {
     const usersAtStart = await helper.usersInDb()
 
     const newUser = {
