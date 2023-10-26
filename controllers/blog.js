@@ -28,15 +28,14 @@ blogRouters.get("/:id", async (request, response, next) => {
 
 blogRouters.post("/", async (request, response, next) => {
   const body = request.body;
-
+  
   const decodedToken = jwt.verify(request.token, process.env.SECRET);
   if (!decodedToken.id) {
     return response.status(401).json({ error: "token invalid." });
   }
   const user = await User.findById(decodedToken.id);
-
-  // const user = await User.findById(body.userId);
-
+  logger.info(`Post added by ${user.name}`)
+  
   const blog = new Blog({
     title: body.title,
     author: body.author,
@@ -46,8 +45,10 @@ blogRouters.post("/", async (request, response, next) => {
   });
   // NOTE: express-async-error package is used for try/catch removal/simplification
   const savedBlog = await blog.save();
-
+  
   user.blogs = user.blogs.concat(savedBlog._id);
+
+
   await user.save();
 
   // response.status(201).json(savedBlog);
@@ -69,6 +70,7 @@ blogRouters.delete("/:id", async (request, response, next) => {
 
   if (targetedBlog.user._id.toString() === user._id.toString()) {
     await Blog.findByIdAndRemove(request.params.id);
+    logger.info(`Post removed by ${user.name}`)
     response.status(204).end();
   } else {
     return response.status(401).json({ error: `Unauthorized` });
