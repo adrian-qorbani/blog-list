@@ -42,9 +42,6 @@ This project is created via proposed exercises in University of Helsinki's Fulls
 - [x] Create a MongoDB database and establish connection
 - [x] Add user administration
 - [x] Add user authentication
-- [ ] Embed testing for backend's elements (in progress)
-- [ ] Create a stylized React Frontend
-- [ ] Deploy the website
 
 
 ## Contact
